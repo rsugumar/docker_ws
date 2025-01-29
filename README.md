@@ -26,7 +26,8 @@ To get started with using these Dockerfiles, follow these steps:
 
 1. Clone this repository to your local machine.
 2. Update the `docker-compose.yml` file to reflect any changes you've made to the services or their configurations.
-3. Run `docker-compose up -d` to start all services in detached mode.
+3. Run `docker-compose up -d` to start the service in detached mode.
+3. `docker-compose down` to bring down the service that's already running.
 
 ### Services
 
