@@ -1,0 +1,33 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguard
+    hostname: adguard
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - adguard_data:/opt/adguardhome
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      # Plain DNS
+      - 53:53/tcp
+      - 53:53/udp
+      # DHCP
+      - 67:67/udp
+      - 68:68/tcp
+      - 68:68/udp
+      # AdGuard Home Admin Panel as well as DNS-over-HTTPS
+      - 8080:80/tcp
+      - 8443:443/tcp
+      - 8443:443/udp
+      - 3000:3000/tcp
+    networks:
+      - adguard-network
+
+volumes:
+  adguard_data:
+
+networks:
+  adguard-network:
+    external: true

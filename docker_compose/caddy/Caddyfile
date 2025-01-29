@@ -1,0 +1,15 @@
+{
+	auto_https off
+}
+
+localhost:8080 {
+	respond "Hello Caddy!"
+}
+
+portainer.local:80 {
+	reverse_proxy portainer:9000
+}
+
+adguard.local:80 {
+	reverse_proxy adguard:8080
+}

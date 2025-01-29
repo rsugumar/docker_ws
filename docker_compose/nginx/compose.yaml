@@ -1,0 +1,20 @@
+services:
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/mysites.conf:ro  # Mount your custom Nginx configuration
+      - ./certs:/etc/nginx/certs:ro
+      - ./html:/usr/share/nginx/html:ro  # Mount your website files
+    networks:
+      - adguard-network
+
+# volumes:
+#   nginx_data:
+
+networks:
+  adguard-network:
+    external: true
