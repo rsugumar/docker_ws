@@ -8,9 +8,6 @@
 * [Getting Started](#getting-started)
 
 ## Introduction
-This repo is created to keep my self-hosted various services dockerfiles.
-
-## Getting Started
 Welcome to My Self-Hosted Services Repository!
 
 This repository contains Dockerfiles for various services that I use on my self-hosted local machine. The goal of this project is to provide a centralized and version-controlled collection of these configurations, making it easier to manage and maintain them.
