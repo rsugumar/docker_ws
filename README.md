@@ -14,7 +14,7 @@ This repository contains Dockerfiles for various services that I use on my self-
 
 ### Features
 
-* **Dockerized Services**: This repository includes Dockerfiles for various services such as [insert service names here], allowing me to easily containerize and deploy them on my local machine.
+* **Dockerized Services**: This repository includes Dockerfiles for various services such as plex, adguard, next cloud, allowing me to easily containerize and deploy them on my local machine.
 * **Version Control**: By storing the Dockerfiles in this repository, I can keep track of changes and updates made to each service over time.
 
 ### Getting Started
