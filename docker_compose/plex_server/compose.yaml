@@ -10,10 +10,11 @@ services:
     volumes:
       - plex-server-data:/config
       - /media/rsukumar/Ext_Disk_1/Videos:/media/Disk1
-      # - /media/rsukumar/Ext_Disk_2:/media/Disk2
-      # - /media/rsukumar/Ext_Disk_3:/media/Disk3
-      # - /media/rsukumar/Ext_Disk_4:/media/Disk4
-      # - /media/rsukumar/Ext_Disk_5:/media/Disk5
-      # - /media/rsukumar/Ext_Disk_6:/media/Disk6
+      # - /media/rsukumar/Ext_Disk_2/Videos:/media/Disk2
+      # - /media/rsukumar/Ext_Disk_3/Videos:/media/Disk3
+      - /media/rsukumar/Ext_Disk_4/Videos:/media/Disk4
+      - /media/rsukumar/Ext_Disk_5/Videos:/media/Disk5
+      - /media/rsukumar/Ext_Disk_6/Videos:/media/Disk6
+      - /media/rsukumar/Ext_Disk_7/Videos:/media/Disk7
 volumes:
   plex-server-data:
