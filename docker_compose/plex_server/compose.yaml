@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - TZ=GMT+1
       - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
+      - /etc/timezone:/etc/timezone:ro
       - plex-server-data:/config
       - /media/rsukumar/Ext_Disk_1/Videos:/media/Disk1
       # - /media/rsukumar/Ext_Disk_2/Videos:/media/Disk2
@@ -16,5 +16,6 @@ services:
       - /media/rsukumar/Ext_Disk_5/Videos:/media/Disk5
       - /media/rsukumar/Ext_Disk_6/Videos:/media/Disk6
       - /media/rsukumar/Ext_Disk_7/Videos:/media/Disk7
+
 volumes:
   plex-server-data:
