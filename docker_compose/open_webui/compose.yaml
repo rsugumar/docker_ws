@@ -7,8 +7,6 @@ services:
     tty: true
     restart: unless-stopped
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
-    ports:
-      - 11434:11434
     deploy:
       resources:
         reservations:
@@ -30,14 +28,16 @@ services:
       - open-webui:/app/backend/data
     depends_on:
       - ollama
+      - searxng
     ports:
       - ${OPEN_WEBUI_PORT-3000}:8080
+    env_file:
+      - .env
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
-      WEBUI_SECRET_KEY:
       ENABLE_RAG_WEB_SEARCH: true
       RAG_WEB_SEARCH_ENGINE: searxng
-      RAG_WEB_SEARCH_RESULT_COUNT: 3
+      RAG_WEB_SEARCH_RESULT_COUNT: 5
       RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 10
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
     extra_hosts:
@@ -57,7 +57,7 @@ services:
       SEARXNG_UWSGI_THREADS: 3
     restart: unless-stopped
     cap_drop:
-      - ALL
+      - ALL # Remove this entry only for the first run and reintroduce it after the first run
     cap_add:
       - CHOWN
       - SETGID
@@ -74,4 +74,8 @@ volumes:
     external:
       true
   open-webui:
+    external:
+      true
   searxng:
+    external:
+      true
