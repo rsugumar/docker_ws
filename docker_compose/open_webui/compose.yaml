@@ -25,7 +25,7 @@ services:
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
     container_name: open-webui
     volumes:
-      - open-webui:/app/backend/data
+      - open_webui:/app/backend/data
     depends_on:
       - ollama
       - searxng
@@ -77,7 +77,7 @@ volumes:
   ollama:
     external:
       true
-  open-webui:
+  open_webui:
     external:
       true
   searxng:
