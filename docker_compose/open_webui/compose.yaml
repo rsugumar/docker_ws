@@ -74,6 +74,8 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+    networks:
+      - adguard_network
 
 volumes:
   ollama:
