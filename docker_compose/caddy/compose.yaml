@@ -15,7 +15,7 @@ services:
       - 127.0.0.1
       - 172.19.0.2
     networks:
-      - adguard-network
+      - adguard_network
     ports:
       - "80:80"
       - "443:443"
@@ -26,5 +26,5 @@ volumes:
   caddy_config:
 
 networks:
-  adguard-network:
+  adguard_network:
     external: true

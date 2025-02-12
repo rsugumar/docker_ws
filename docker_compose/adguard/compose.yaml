@@ -23,11 +23,11 @@ services:
       - 8443:443/udp
       - 3000:3000/tcp
     networks:
-      - adguard-network
+      - adguard_network
 
 volumes:
   adguard_data:
 
 networks:
-  adguard-network:
+  adguard_network:
     external: true

@@ -10,7 +10,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainer_data:/data
     networks:
-      - adguard-network
+      - adguard_network
     ports:
       - 9000:9000
 
@@ -18,5 +18,5 @@ volumes:
   portainer_data:
 
 networks:
-  adguard-network:
+  adguard_network:
     external: true
