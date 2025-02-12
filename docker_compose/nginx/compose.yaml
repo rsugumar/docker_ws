@@ -10,11 +10,11 @@ services:
       - ./certs:/etc/nginx/certs:ro
       - ./html:/usr/share/nginx/html:ro  # Mount your website files
     networks:
-      - adguard-network
+      - adguard_network
 
 # volumes:
 #   nginx_data:
 
 networks:
-  adguard-network:
+  adguard_network:
     external: true

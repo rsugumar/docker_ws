@@ -11,8 +11,8 @@ services:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
     networks:
-      - adguard-network
+      - adguard_network
 
 networks:
-  adguard-network:
+  adguard_network:
     external: true

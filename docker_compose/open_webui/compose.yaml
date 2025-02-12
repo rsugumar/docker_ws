@@ -47,6 +47,8 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
+    networks:
+      - adguard_network
 
   searxng:
     container_name: searxng
@@ -72,6 +74,8 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
+    networks:
+      - adguard_network
 
 volumes:
   ollama:
@@ -83,3 +87,7 @@ volumes:
   searxng:
     external:
       true
+
+networks:
+  adguard_network:
+    external: true
