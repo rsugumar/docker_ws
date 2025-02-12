@@ -1,11 +1,19 @@
-{
-	auto_https off
-}
-
-portainer.local {
+portainer.myhome.me:80 {
 	reverse_proxy portainer:9000
 }
 
-adguard.local {
+adguard.myhome.me {
 	reverse_proxy adguard:8080
 }
+
+plex.myhome.me {
+	reverse_proxy plex:32400
+}
+
+#openwebui.myhome.me {
+#	reverse_proxy 192.168.4.101:8080
+#}
+
+#:80 {
+#	respond "Hello Candy!!!"
+#}
