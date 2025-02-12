@@ -6,16 +6,18 @@ services:
     network_mode: host
     environment:
       - PLEX_CLAIM=${PLEX_CLAIM}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - plex-server-data:/config
       - /media/rsukumar/Ext_Disk_1/Videos:/media/Disk1
       # - /media/rsukumar/Ext_Disk_2/Videos:/media/Disk2
       # - /media/rsukumar/Ext_Disk_3/Videos:/media/Disk3
-      - /media/rsukumar/Ext_Disk_4/Videos:/media/Disk4
-      - /media/rsukumar/Ext_Disk_5/Videos:/media/Disk5
-      - /media/rsukumar/Ext_Disk_6/Videos:/media/Disk6
-      - /media/rsukumar/Ext_Disk_7/Videos:/media/Disk7
+      # - /media/rsukumar/Ext_Disk_4/Videos:/media/Disk4
+      # - /media/rsukumar/Ext_Disk_5/Videos:/media/Disk5
+      # - /media/rsukumar/Ext_Disk_6/Videos:/media/Disk6
+      # - /media/rsukumar/Ext_Disk_7/Videos:/media/Disk7
 
 volumes:
   plex-server-data:
