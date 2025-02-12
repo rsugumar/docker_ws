@@ -47,6 +47,8 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
+    networks:
+      - adguard_network
 
   searxng:
     container_name: searxng
@@ -83,3 +85,7 @@ volumes:
   searxng:
     external:
       true
+
+networks:
+  adguard_network:
+    external: true
