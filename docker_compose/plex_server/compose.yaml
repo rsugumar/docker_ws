@@ -19,6 +19,5 @@ services:
       # - /media/rsukumar/Ext_Disk_6/Videos:/media/Disk6
       # - /media/rsukumar/Ext_Disk_7/Videos:/media/Disk7
 
-
 volumes:
   plex-server-data:
