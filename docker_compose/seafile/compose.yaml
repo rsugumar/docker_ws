@@ -39,6 +39,7 @@ services:
       - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD} # Specifies Seafile admin password, default is 'asecret'.
       - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
       - SEAFILE_SERVER_HOSTNAME=${SEAFILE_SERVER_HOSTNAME} # Specifies your host name if https is enabled.
+      - CSRF_TRUSTED_ORIGINS=[${SEAFILE_SERVER_HOSTNAME}] # is not working from here; go edit /shared/seafile/conf/seahub_settings.py and add this entry directly
     depends_on:
       - db
       - memcached
