@@ -1,0 +1,68 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: seafile-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWD}  # Required, set the root's password of MySQL service.
+      - MYSQL_LOG_CONSOLE=true
+      - MARIADB_AUTO_UPGRADE=1
+    restart: unless-stopped
+    volumes:
+      # - seafile_mysql:/var/lib/mysql  # Required, specifies the path to MySQL data persistent store.
+      - ./seafile_vol/seafile-mysql/db:/var/lib/mysql
+    networks:
+      - adguard_network
+
+  memcached:
+    image: memcached:1.6.18
+    container_name: seafile-memcached
+    entrypoint: memcached -m 256
+    restart: unless-stopped
+    networks:
+      - adguard_network
+
+  seafile:
+    image: seafileltd/seafile-mc:11.0-latest
+    container_name: seafile
+    restart: unless-stopped
+    ports:
+      - "2080:80"
+      # - "1443:443"  # If https is enabled, cancel the comment.
+    volumes:
+      # - seafile_data:/shared   # Required, specifies the path to Seafile data persistent store.
+      - ./seafile_vol/seafile-data:/shared
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - DB_HOST=db
+      - DB_ROOT_PASSWD=${DB_ROOT_PASSWD}  # Required, the value should be root's password of MySQL service.
+      - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL} # Specifies Seafile admin user, default is 'me@example.com'.
+      - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD} # Specifies Seafile admin password, default is 'asecret'.
+      - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
+      - SEAFILE_SERVER_HOSTNAME=${SEAFILE_SERVER_HOSTNAME} # Specifies your host name if https is enabled.
+      - CSRF_TRUSTED_ORIGINS=[${SEAFILE_SERVER_HOSTNAME}] # is not working from here; go edit /shared/seafile/conf/seahub_settings.py and add this entry directly
+    depends_on:
+      - db
+      - memcached
+    networks:
+      - adguard_network
+
+networks:
+  adguard_network:
+    external: true
+
+# volumes:
+#   seafile_mysql:
+#     name: seafile_mysql
+#     driver: local
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
+
+#   seafile_data:
+#     name: seafile_data
+#     driver: local
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
