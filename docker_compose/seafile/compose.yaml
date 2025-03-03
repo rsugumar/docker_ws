@@ -8,8 +8,8 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     restart: unless-stopped
     volumes:
-      - seafile_mysql:/var/lib/mysql  # Required, specifies the path to MySQL data persistent store.
-      # - ./seafile_vol/seafile-mysql/db:/var/lib/mysql
+      # - seafile_mysql:/var/lib/mysql  # Required, specifies the path to MySQL data persistent store.
+      - ./seafile_vol/seafile-mysql/db:/var/lib/mysql
     networks:
       - adguard_network
 
@@ -29,8 +29,8 @@ services:
       - "2080:80"
       # - "1443:443"  # If https is enabled, cancel the comment.
     volumes:
-      - seafile_data:/shared   # Required, specifies the path to Seafile data persistent store.
-      # - ./seafile_vol/seafile-data:/shared
+      # - seafile_data:/shared   # Required, specifies the path to Seafile data persistent store.
+      - ./seafile_vol/seafile-data:/shared
       - /etc/localtime:/etc/localtime:ro
     environment:
       - DB_HOST=db
@@ -50,19 +50,19 @@ networks:
   adguard_network:
     external: true
 
-volumes:
-  seafile_mysql:
-    name: seafile_mysql
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
+# volumes:
+#   seafile_mysql:
+#     name: seafile_mysql
+#     driver: local
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
 
-  seafile_data:
-    name: seafile_data
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
+#   seafile_data:
+#     name: seafile_data
+#     driver: local
+#     driver_opts:
+#       type: 'none'
+#       o: 'bind'
+#       device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
