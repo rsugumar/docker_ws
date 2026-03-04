@@ -10,8 +10,9 @@ services:
       - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
     volumes:
-      - /path/to/calibre-web/data:/config
-      - /path/to/calibre/library:/books
+      - ./data:/config
+      - /media/rsukumar/Ext_Disk_7/eBooks/CalibreLibrary:/books
     ports:
       - 8083:8083
     restart: unless-stopped
+

@@ -11,8 +11,12 @@ services:
       - portainer_data:/data
     networks:
       - adguard_network
-    ports:
-      - 9000:9000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.nicebee.ddnsgeek.com`)"
+      - "traefik.http.routers.portainer.entrypoints=https"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
 
 volumes:
   portainer_data:
