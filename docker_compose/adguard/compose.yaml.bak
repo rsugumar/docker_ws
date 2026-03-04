@@ -1,0 +1,52 @@
+services:
+  adguardhome:
+    image: adguard/adguardhome:latest
+    container_name: adguard
+    hostname: adguard
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - adguard_data:/opt/adguardhome
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      # Plain DNS
+      - 53:53/tcp
+      - 53:53/udp
+      # DHCP
+      # - 67:67/udp
+      # - 68:68/tcp
+      # - 68:68/udp
+      # AdGuard Home Admin Panel as well as DNS-over-HTTPS
+      - 1080:80/tcp
+      - 8443:443/tcp
+      - 8443:443/udp
+      - 3000:3000/tcp
+    networks:
+      - adguard_network
+    labels:
+      - "traefik.enable=true"
+      # HTTP router
+      - "traefik.http.routers.adguard.entrypoints=http"
+      - "traefik.http.routers.adguard.rule=Host(`adguard.nicebee.duckdns.org`)"
+      - "traefik.http.routers.adguard.middlewares=adguard-https-redirect"
+      # HTTPS redirect
+      - "traefik.http.middlewares.adguard-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.adguard-https-redirect.redirectscheme.permanent=true"
+      # HTTPS router
+      - "traefik.http.routers.adguard-secure.entrypoints=https"
+      - "traefik.http.routers.adguard-secure.rule=Host(`adguard.nicebee.duckdns.org`)"
+      - "traefik.http.routers.adguard-secure.tls=true"
+      - "traefik.http.routers.adguard-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.adguard-secure.service=adguard"
+      # Service definition
+      - "traefik.http.services.adguard.loadbalancer.server.port=3000"
+
+volumes:
+  adguard_data:
+    external: true
+
+networks:
+  adguard_network:
+    external: true
+

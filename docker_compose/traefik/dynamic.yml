@@ -1,0 +1,9 @@
+http:
+  routers:
+    Traefik-dashboard:
+      rule: "Host(`traefik.nicebee.ddnsgeek.com`)"
+      service: "api@internal"
+      entryPoints:
+        - "http"
+      tls:
+        certResolver: letsencrypt
