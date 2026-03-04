@@ -32,6 +32,7 @@ services:
       # - seafile_data:/shared   # Required, specifies the path to Seafile data persistent store.
       - ./seafile_vol/seafile-data:/shared
       - /etc/localtime:/etc/localtime:ro
+      # - /media/rsukumar/Ext_Disk_7/Backups/SeafileBakups/seafile-data:/shared
     environment:
       - DB_HOST=db
       - DB_ROOT_PASSWD=${DB_ROOT_PASSWD}  # Required, the value should be root's password of MySQL service.
@@ -66,3 +67,4 @@ networks:
 #       type: 'none'
 #       o: 'bind'
 #       device: '/home/rsukumar/my_workspace/docker_ws/docker_compose/seafile/seafile_vol'
+

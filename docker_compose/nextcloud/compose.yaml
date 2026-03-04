@@ -33,14 +33,20 @@ services:
     image: nginx
     restart: always
     ports:
-      - 8080:80
+      - 3080:80
     depends_on:
       - app
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     volumes_from:
       - app
+    networks:
+      - adguard_network
 
 volumes:
   nextcloud:
   db:
+
+networks:
+  adguard_network:
+    external: true
