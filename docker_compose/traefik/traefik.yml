@@ -27,13 +27,18 @@ providers:
     exposedByDefault: false
     network: adguard_network
     watch: true
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
 
-certificatesResolvers:
+certificateResolvers:
   letsencrypt:
     acme:
       email: youremail@gmail.com
       storage: acme.json
       httpChallenge:
         entryPoint: http
-      dnsChallenge:
-        provider: ddnsgeek
+
+experimental:
+  upnp:
+    enabled: true
