@@ -17,8 +17,5 @@ services:
 
 volumes:
   data:
-    driver: local
   plugins:
-    driver: local
   certs:
-    driver: local
