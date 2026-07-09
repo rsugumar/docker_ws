@@ -13,7 +13,7 @@ services:
      - plugins:/var/www/app/plugins
      - certs:/etc/nginx/ssl
     environment:
-     - PLUGIN_INSTALLER=false # Swap to true to enable web based plugin installation
+     - PLUGIN_INSTALLER=true # Swap to true to enable web based plugin installation
 
 volumes:
   data:
