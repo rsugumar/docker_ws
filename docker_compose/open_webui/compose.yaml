@@ -7,8 +7,12 @@ services:
     tty: true
     restart: unless-stopped
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    ports:
+      - 11434:11434
     networks:
       - adguard_network
+    environment:
+      - OLLAMA_HOST=0.0.0.0
     deploy:
       resources:
         reservations:
@@ -24,7 +28,7 @@ services:
       args:
         OLLAMA_BASE_URL: '/ollama'
       dockerfile: Dockerfile
-    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-latest}
     container_name: open-webui
     volumes:
       - open_webui:/app/backend/data
