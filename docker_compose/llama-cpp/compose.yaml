@@ -1,0 +1,16 @@
+services:
+  llama:
+    image: ghcr.io/ggml-org/llama.cpp:server-vulkan
+    container_name: llama-router-vulkan
+    ports:
+      - "8080:8080"
+    volumes:
+      - ~/llm_models/:/models
+    devices:
+      - /dev/dri:/dev/dri
+    command: >
+      --models-dir /models
+      --models-max 1
+      --host 0.0.0.0
+      --port 8080
+    restart: unless-stopped
