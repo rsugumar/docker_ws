@@ -1,8 +1,17 @@
+# Prerequisites (NVIDIA Container Toolkit setup):
+#   1. Install the toolkit:  sudo apt-get install -y nvidia-container-toolkit
+#   2. Configure Docker:     sudo nvidia-ctk runtime configure --runtime=docker
+#   3. Restart Docker:       sudo systemctl restart docker
+#   4. Create the volume:    docker volume create ollama
+#
 services:
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
     restart: unless-stopped
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
     ports:
       - "11434:11434"
     volumes:
