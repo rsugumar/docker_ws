@@ -45,7 +45,7 @@ curl http://localhost:8811/sse
 
 ## OpenCode integration
 
-Already configured in `~/.config/opencode/opencode.jsonc`:
+Configuration in `~/.config/opencode/opencode.jsonc`:
 
 ```jsonc
 "docker-mcp-gateway": {
