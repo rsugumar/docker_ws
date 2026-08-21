@@ -1,0 +1,43 @@
+# Docker MCP Gateway — software-dev profile
+# Runs GitHub, Brave Search, Redis, Playwright, Docker Hub, Desktop Commander
+# via SSE on port 8811. Survives machine restarts (restart: always).
+#
+# Usage:
+#   docker compose up -d
+#   docker compose logs -f
+#
+# Connect OpenCode to http://localhost:8811/sse
+
+services:
+  gateway:
+    image: docker/mcp-gateway
+    container_name: mcp-gateway
+    restart: always
+    ports:
+      - "8811:8811"
+    environment:
+      - DOCKER_MCP_IN_CONTAINER=1
+    command:
+      - --transport=sse
+      - --port=8811
+      - --servers=github,brave,redis,playwright,dockerhub,desktop-commander
+      - --secrets=/mcp/secrets.env
+      - --watch=true
+      - --verbose=true
+    volumes:
+      # Docker socket — lets the gateway spawn MCP server containers
+      - /var/run/docker.sock:/var/run/docker.sock
+      # MCP Toolkit config (read-only) — catalogs, registry, tools
+      - ${HOME}/.docker/mcp/catalogs:/mcp/catalogs:ro
+      - ${HOME}/.docker/mcp/config.yaml:/mcp/config.yaml:ro
+      - ${HOME}/.docker/mcp/registry.yaml:/mcp/registry.yaml:ro
+      - ${HOME}/.docker/mcp/tools.yaml:/mcp/tools.yaml:ro
+      # Secrets — API keys for GitHub, Brave, etc.
+      - ${HOME}/.docker/mcp/secrets.env:/mcp/secrets.env:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8811/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
