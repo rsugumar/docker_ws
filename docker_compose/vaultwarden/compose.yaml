@@ -5,12 +5,11 @@ services:
     image: vaultwarden/server:latest
     container_name: vaultwarden
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      # Signups stay closed; the account is created via the admin panel.
       SIGNUPS_ALLOWED: "false"
       ADMIN_TOKEN: ${ADMIN_TOKEN}
-      # Required for correct websocket URLs and password-reset links.
-      # Previously unset, so Vaultwarden fell back to its container-local value.
       DOMAIN: https://vaultwarden.myhome.me
       WEBSOCKET_ENABLED: "true"
       ROCKET_ADDRESS: 0.0.0.0
