@@ -1,0 +1,33 @@
+name: vaultwarden
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      # Signups stay closed; the account is created via the admin panel.
+      SIGNUPS_ALLOWED: "false"
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+      # Required for correct websocket URLs and password-reset links.
+      # Previously unset, so Vaultwarden fell back to its container-local value.
+      DOMAIN: https://vaultwarden.myhome.me
+      WEBSOCKET_ENABLED: "true"
+      ROCKET_ADDRESS: 0.0.0.0
+      ROCKET_PORT: 80
+    volumes:
+      - ./vw-data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    # Bound to loopback only. Caddy is the intended entry point on 443, so this
+    # keeps Vaultwarden off the LAN directly (previously 0.0.0.0:8000 exposed
+    # it over plain HTTP, bypassing TLS entirely).
+    ports:
+      - 127.0.0.1:8000:80
+    networks:
+      - adguard_default
+
+networks:
+  adguard_default:
+    external: true
+    name: adguard_network
