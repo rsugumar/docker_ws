@@ -35,7 +35,6 @@ bookorbit.myhome.me {
 	reverse_proxy bookorbit-app:3000
 }
 
-# open-webui / ollama / searxng are stopped. Entry kept for later.
 openwebui.myhome.me {
 	tls internal
 	reverse_proxy open-webui:8080
