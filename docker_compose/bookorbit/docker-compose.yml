@@ -9,7 +9,8 @@ services:
     env_file:
       - .env
     ports:
-      - "${APP_PORT:-3000}:${PORT:-3000}"
+      # Loopback only: Caddy on 443 is the intended entry point.
+      - "127.0.0.1:${APP_PORT:-3000}:${PORT:-3000}"
     environment:
       NODE_ENV: production
       PORT: ${PORT:-3000}
@@ -57,6 +58,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+    networks:
+      - adguard_default
 
   postgres:
     container_name: bookorbit-db
@@ -76,3 +79,10 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+    networks:
+      - adguard_default
+
+networks:
+  adguard_default:
+    external: true
+    name: adguard_network

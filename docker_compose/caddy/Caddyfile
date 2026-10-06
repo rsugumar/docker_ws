@@ -1,19 +1,42 @@
-portainer.myhome.me:80 {
-	reverse_proxy portainer:9000
+{
+	# LAN-only setup: no acme_ca / email needed.
+	# Caddy uses its own internal CA, so no public DNS or port forwarding.
 }
 
 adguard.myhome.me {
-	reverse_proxy adguard:8080
+	tls internal
+	reverse_proxy adguard:80
+}
+
+portainer.myhome.me {
+	tls internal
+	reverse_proxy portainer:9000
+}
+
+kanboard.myhome.me {
+	tls internal
+	reverse_proxy kanboard:80
 }
 
 plex.myhome.me {
-	reverse_proxy plex:32400
+	tls internal
+	reverse_proxy host.docker.internal:32400
 }
 
-#openwebui.myhome.me {
-#	reverse_proxy 192.168.4.101:8080
-#}
+vaultwarden.myhome.me {
+	tls internal
+	reverse_proxy vaultwarden:80 {
+		flush_interval -1
+	}
+}
 
-#:80 {
-#	respond "Hello Candy!!!"
-#}
+bookorbit.myhome.me {
+	tls internal
+	reverse_proxy bookorbit-app:3000
+}
+
+# open-webui / ollama / searxng are stopped. Entry kept for later.
+openwebui.myhome.me {
+	tls internal
+	reverse_proxy open-webui:8080
+}

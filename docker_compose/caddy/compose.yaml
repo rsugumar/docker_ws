@@ -1,25 +1,21 @@
 services:
   caddy:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
     image: caddy:latest
     container_name: caddy
     restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/site:/srv
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./site:/srv
       - caddy_data:/data
       - caddy_config:/config
-    dns:
-      - 127.0.0.1
-      - 172.19.0.2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - adguard_network
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
 
 volumes:
   caddy_data:

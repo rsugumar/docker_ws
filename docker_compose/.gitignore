@@ -1,3 +1,14 @@
+# secrets
+.env
+*.key
+*.pem
 open_webui/.env
+
+# live app state
+bookorbit/data/
+calibre-web/data/
+vaultwarden/vw-data/
 nginx-proxy-manager/data/
+homarr/appdata/
+!**/nginx-proxy-manager/data/letsencrypt/*.pem
 pi-hole/e*
