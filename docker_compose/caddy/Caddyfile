@@ -1,41 +1,41 @@
 {
-	# LAN-only setup: no acme_ca / email needed.
-	# Caddy uses its own internal CA, so no public DNS or port forwarding.
+    # LAN-only setup: no acme_ca / email needed.
+    # Caddy uses its own internal CA, so no public DNS or port forwarding.
 }
 
 adguard.myhome.me {
-	tls internal
-	reverse_proxy adguard:80
+    tls internal
+    reverse_proxy adguard:80
 }
 
 portainer.myhome.me {
-	tls internal
-	reverse_proxy portainer:9000
+    tls internal
+    reverse_proxy portainer:9000
 }
 
 kanboard.myhome.me {
-	tls internal
-	reverse_proxy kanboard:80
+    tls internal
+    reverse_proxy kanboard:80
 }
 
 plex.myhome.me {
-	tls internal
-	reverse_proxy host.docker.internal:32400
+    tls internal
+    reverse_proxy host.docker.internal:32400
 }
 
 vaultwarden.myhome.me {
-	tls internal
-	reverse_proxy vaultwarden:80 {
-		flush_interval -1
-	}
+    tls internal
+    reverse_proxy vaultwarden:80 {
+        flush_interval -1
+    }
 }
 
 bookorbit.myhome.me {
-	tls internal
-	reverse_proxy bookorbit-app:3000
+    tls internal
+    reverse_proxy bookorbit-app:3000
 }
 
 openwebui.myhome.me {
-	tls internal
-	reverse_proxy open-webui:8080
+    tls internal
+    reverse_proxy open-webui:8080
 }
