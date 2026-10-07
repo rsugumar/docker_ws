@@ -230,9 +230,10 @@ Two earlier attempts failed:
 
 The shared client is already published, so there is **no 7-day expiry**.
 
-> The old custom client's secret was exposed in process listings during setup.
-> That client is unused and should be deleted at
-> <https://console.cloud.google.com/apis/credentials?project=gen-lang-client-0472388410>.
+The old custom client's secret was exposed in process listings during setup.
+**That client has been deleted** (2026-10-07). `rclone lsd GDrive:` was
+re-verified afterwards and still authenticates, since the shared client is
+unaffected.
 
 ### Library path
 
