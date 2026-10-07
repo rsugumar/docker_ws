@@ -265,19 +265,103 @@ use.
 
 ---
 
+## Gotchas
+
+Learned the hard way during setup. Each of these caused a real outage.
+
+### `.env` may be overwritten with template values
+
+`.env` was silently replaced with `.env.example` contents at least once during
+setup, resetting `BOOKS_HOST_PATH` to `./books` and the secrets to placeholders.
+The app then mounted an empty directory and the library appeared to vanish.
+
+**Check this first whenever the library looks empty or the app will not start:**
+
+```bash
+grep -E '^BOOKS_HOST_PATH|^POSTGRES_PASSWORD' ~/docker_compose/bookorbit/.env
+```
+
+A healthy value is `BOOKS_HOST_PATH=/home/rsukumar/books` and a
+`POSTGRES_PASSWORD` that is **not** `change-this-password`.
+
+### Changing `POSTGRES_PASSWORD` does not update the database
+
+Postgres reads `POSTGRES_PASSWORD` **only on first initialisation**. Editing
+`.env` afterwards leaves the existing role's password unchanged, and the app
+fails with `password authentication failed for user "bookorbit"`.
+
+```bash
+docker exec bookorbit-db psql -U bookorbit -d bookorbit \
+  -c "ALTER ROLE bookorbit WITH PASSWORD '<value from .env>';"
+```
+
+### Testing the password over `docker exec` proves nothing
+
+`pg_hba.conf` ends with a catch-all:
+
+```
+local   all all                 trust
+host    all all all             scram-sha-256
+```
+
+`docker exec ... psql` connects over the **local Unix socket**, which is
+`trust` — the password is never checked, so it succeeds regardless. The app
+connects over **TCP**, where the password *is* required.
+
+Always reproduce over TCP before concluding the credentials are fine:
+
+```bash
+PW=$(sed -n 's/^POSTGRES_PASSWORD=//p' ~/docker_compose/bookorbit/.env)
+docker run --rm --network adguard_network -e PGPASSWORD="$PW" \
+  postgres:16-alpine psql -h postgres -U bookorbit -d bookorbit -tAc "select current_user"
+```
+
+### `caddy reload` does not pick up Caddyfile bind-mount changes
+
+The container kept serving a stale inode after the file changed on disk, so
+`caddy reload` reloaded the **old** content. A `docker restart caddy` was
+required. It looks like the reload succeeded.
+
+### `APP_PORT` is the host port; `PORT` is the container port
+
+AdGuard holds `0.0.0.0:3000`, so `APP_PORT=3003` avoids the clash.
+
+Caddy proxies over the Docker network directly to `bookorbit-app:3000` and
+never uses the host mapping. If Caddy and the app disagree, check that the app
+is actually listening on the port Caddy targets:
+
+```bash
+docker exec bookorbit-app netstat -tlnp
+```
+
+Because `PORT` is unset, the app listens on **3000**. To move it to 3003
+internally, set `PORT=3003` in `.env` as well.
+
+Avoid the 3000-3010 range generally — that is where self-hosted services
+collide. `8088` is free on this Pi.
+
+---
+
 ## Troubleshooting
 
 ### Library scans as empty
 
-Check the mount is real, not an empty directory:
+Confirm the mount resolves to the real library, not an empty directory:
 
 ```bash
-ls /home/rsukumar/books | head
-docker compose -f ~/docker_compose/bookorbit/docker-compose.yml exec app ls /books | head
+find ~/books -type f | wc -l                 # expect 1371
+docker exec bookorbit-app sh -c 'find /books -type f | wc -l'
+docker inspect bookorbit-app --format '{{range .Mounts}}{{.Source}} -> {{.Destination}}{{"\n"}}{{end}}'
 ```
 
-If the host path is empty, the sync has not run — check
-`journalctl --user -u bookorbit-sync.service`.
+If the host count is right but the container sees ~0 files, `BOOKS_HOST_PATH` in
+`.env` has been reset — see Gotchas. If the host is also empty, the sync has not
+run; check `systemctl --user status bookorbit-sync.service`.
+
+### App will not start, logs show auth failure
+
+See Gotchas — usually a changed `POSTGRES_PASSWORD` that was never applied to
+the existing database, or an `.env` reset to placeholders.
 
 ### Permission errors
 
