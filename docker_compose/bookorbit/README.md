@@ -6,6 +6,12 @@ with a Calibre library kept in sync with Google Drive.
 - Upstream: <https://bookorbit.app>
 - Reachable at `https://bookorbit.myhome.me` (Caddy, internal CA)
 
+Paths below use a shorthand:
+
+```bash
+export BOOKORBIT=~/docker_compose/bookorbit
+```
+
 ---
 
 ## How storage works
@@ -50,6 +56,7 @@ Drive is the archive and the safety net. Local is a working copy.
 | `~/docker_compose/bookorbit/.env.example` | tracked template |
 | `~/docker_compose/bookorbit/.env` → `BOOKS_HOST_PATH` | `/home/rsukumar/books` |
 | `~/books/` | the local library that BookOrbit reads |
+| `bookorbit/scripts/` | sync and auth scripts |
 | `~/.config/rclone/rclone.conf` | Drive remote, `chmod 600` |
 
 Docker layout:
@@ -70,8 +77,8 @@ Upload through BookOrbit's Book Dock, or drop files into `/home/rsukumar/books`.
 Then push to Drive:
 
 ```bash
-~/bin/bookorbit-push.sh --dry-run   # preview
-~/bin/bookorbit-push.sh             # upload
+$BOOKORBIT/scripts/bookorbit-push.sh --dry-run   # preview
+$BOOKORBIT/scripts/bookorbit-push.sh             # upload
 ```
 
 Push is **manual on purpose**. The timer only pulls, so a book added on the Pi
@@ -82,7 +89,7 @@ can never be overwritten before it has been backed up.
 Automatic every 6 hours. To force it:
 
 ```bash
-~/bin/bookorbit-sync.sh
+$BOOKORBIT/scripts/bookorbit-sync.sh
 ```
 
 **Never run two syncs at once.** rclone takes no lock, so a concurrent run means
@@ -98,7 +105,9 @@ pgrep -af bookorbit-sync.sh
 
 ## Scripts
 
-All in `~/bin/`.
+All in `scripts/` beside the compose project, so they are version-controlled
+alongside everything they operate on. The systemd units live in
+`~/.config/systemd/user/`; copies sit here for reference and are git-ignored.
 
 | Script | Direction | When |
 | --- | --- | --- |
@@ -117,6 +126,9 @@ Both sync scripts accept `--dry-run` and pass extra flags through to rclone.
 ~/.config/systemd/user/bookorbit-sync.service
 ~/.config/systemd/user/bookorbit-sync.timer
 ```
+
+Both `ExecStart` and `Documentation` point at the script inside the repo. If the
+scripts move, update the unit and re-run `systemctl --user daemon-reload`.
 
 ```bash
 systemctl --user status bookorbit-sync.timer
@@ -281,7 +293,7 @@ id rsukumar                      # PUID/PGID in .env must match
 
 ### Token expires anyway
 
-`rclone config reconnect GDrive:` then re-run `~/bin/bookorbit-auth.sh`. If the
+`rclone config reconnect GDrive:` then re-run `$BOOKORBIT/scripts/bookorbit-auth.sh`. If the
 token dies quickly, the config has regained a `client_id` — remove those lines.
 
 ---
