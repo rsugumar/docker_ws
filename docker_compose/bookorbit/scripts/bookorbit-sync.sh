@@ -9,7 +9,7 @@
 set -euo pipefail
 
 # Single source of truth for the Drive path, shared with the push script.
-REMOTE_PATH="GDrive:Backups/BookOrbit/Calibre Library"
+REMOTE_PATH="GDrive:Backups/Calibre Orig Library"
 LOCAL_PATH="/home/rsukumar/books"
 
 # Safety: never write outside the intended local library.

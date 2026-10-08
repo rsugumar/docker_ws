@@ -103,6 +103,54 @@ pgrep -af bookorbit-sync.sh
 
 ---
 
+## Send-to-Kindle
+
+Delivery is by email. BookOrbit attaches the book file and sends it through an
+SMTP provider configured in the app — there is no Amazon API involved and no
+third-party service in the path.
+
+**Config change needed: one line in `.env`.** Everything else is set in the UI.
+
+```bash
+printf 'EMAIL_ENCRYPTION_KEY=%s\n' "$(openssl rand -hex 32)" >> ~/docker_compose/bookorbit/.env
+```
+
+This encrypts the SMTP password, which is otherwise stored unencrypted in
+Postgres. No `docker-compose.yml` edit is needed — `env_file: .env` passes every
+variable through, so `EMAIL_ENCRYPTION_KEY` does not have to be listed in the
+`environment:` block.
+
+Then, as an admin, in **Settings → Email**:
+
+| Step | Where | Note |
+| --- | --- | --- |
+| 1 | Providers | Host/port, username, and an **app password** (Gmail, Proton, etc.). Test the connection. |
+| 2 | Recipients | Your `name_1234@kindle.com` address, **Device type = Kindle**, **Preferred format = EPUB**. |
+| 3 | Preferences | Default provider and default recipient, or quick-send fails. |
+
+Permissions: `email_send` to send, `manage_email` to edit providers, superuser to
+share them.
+
+### Two things that will bite you
+
+**Amazon drops the mail if it does not recognise the sender.** Add the provider's
+**From Address** to Amazon's *Manage Your Content and Devices → Personal Document
+Settings → Send-to-Kindle email address*. BookOrbit reports the send as `sent`
+once SMTP accepts it, so a missing whitelist entry looks like a success and the
+book simply never arrives.
+
+**Most of this library cannot go to a Kindle.** Amazon's email ingest takes EPUB
+and PDF. It does not take AZW3, MOBI or KEPUB, which is 369 of the 1,371 files
+here. BookOrbit has **no conversion engine** — a recipient's preferred format is
+a preference, not a conversion, and falls back to the book's primary file. So a
+MOBI-only book sends as MOBI and is silently rejected. Kindle delivery is
+realistically limited to the EPUB and PDF slice.
+
+Sends retry about three times (immediate, ~30s, ~2min). Check **Settings → Email
+→ History** when a book does not show up.
+
+---
+
 ## Scripts
 
 All in `scripts/` beside the compose project, so they are version-controlled
@@ -120,11 +168,45 @@ Both sync scripts accept `--dry-run` and pass extra flags through to rclone.
 
 `REMOTE_PATH` and `LOCAL_PATH` are defined at the top of each script.
 
-### systemd timer
+### Database backup
+
+| | |
+| --- | --- |
+| Script | `scripts/bookorbit-db-backup.sh` |
+| Schedule | daily 03:30 (`bookorbit-db-backup.timer`) |
+| Output | `~/backups/bookorbit-<stamp>.sql.gz` + `.sha256` |
+| Retention | 14 days (`KEEP_DAYS`) |
+
+The database holds everything the book files cannot regenerate: metadata
+edits, covers, reading progress, annotations, collections, and user accounts.
+Nothing else on the Pi restores it.
+
+Each run validates before keeping the file — a size floor, `gzip -t`, and a
+real `CREATE TABLE` count — so a truncated dump is never mistaken for a valid
+backup. Verified restorable into a scratch database.
+
+```bash
+systemctl --user status bookorbit-db-backup.timer
+systemctl --user start bookorbit-db-backup.service   # run now
+```
+
+**Restore:**
+
+```bash
+zcat ~/backups/bookorbit-<stamp>.sql.gz | \
+  docker exec -i bookorbit-db psql -U bookorbit -d bookorbit
+```
+
+Restoring overwrites the live database. Stop the app first
+(`docker compose stop app`).
+
+### systemd timers
 
 ```
 ~/.config/systemd/user/bookorbit-sync.service
 ~/.config/systemd/user/bookorbit-sync.timer
+~/.config/systemd/user/bookorbit-db-backup.service
+~/.config/systemd/user/bookorbit-db-backup.timer
 ```
 
 Both `ExecStart` and `Documentation` point at the script inside the repo. If the
@@ -237,13 +319,32 @@ unaffected.
 
 ### Library path
 
-The Drive library is `Backups/BookOrbit/Calibre Library` (1,372 objects,
-2.89 GiB, 300 author folders).
+The Drive library is **`Backups/Calibre Orig Library`** (1,675 objects,
+3.57 GiB, 268 author folders) — the actively maintained Calibre library.
 
-There was a second library, `Backups/Calibre Orig Library` (1,675 objects,
-3.57 GiB, 268 authors). It is *not* synced.
+An earlier, smaller library at `Backups/BookOrbit/Calibre Library` was synced
+first and later retired. The two overlap heavily, so serving both as separate
+libraries would duplicate every shared book.
 
 `rclone` presents the Drive root directly — there is no `My Drive/` prefix.
+
+### Library format mix
+
+| Format | Count |
+| --- | --- |
+| EPUB | 353 |
+| AZW3 | 262 |
+| MOBI | 76 |
+| KEPUB | 31 |
+| PDF | 23 |
+
+BookOrbit has **no format conversion engine**. That is fine here: Calibre
+already converted on import, and every format above is one BookOrbit reads
+natively. Conversion would only be needed for a format BookOrbit lacks.
+
+The library also carries **464 `.opf` sidecars**. Set the library's **Source
+precedence** to *OPF files* before *Embedded metadata* so Calibre's own data
+wins and the scan does not need to open every file.
 
 ### Disk cleanup
 
