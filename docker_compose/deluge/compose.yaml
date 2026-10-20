@@ -16,3 +16,4 @@ services:
       - 6881:6881/udp
       - 58846:58846 #optional
     restart: unless-stopped
+    stop_grace_period: 1m

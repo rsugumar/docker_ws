@@ -27,6 +27,7 @@ services:
     image: postgres:17    
     container_name: postgresql
     restart: unless-stopped
+    stop_grace_period: 1m
     environment:
       - POSTGRES_USER=cloudreve
       - POSTGRES_DB=cloudreve
