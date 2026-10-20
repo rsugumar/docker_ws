@@ -3,6 +3,7 @@ services:
     container_name: plex
     image: plexinc/pms-docker:latest
     restart: unless-stopped
+    stop_grace_period: 30s
     network_mode: host
     environment:
       - PLEX_CLAIM=${PLEX_CLAIM}

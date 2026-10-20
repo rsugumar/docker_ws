@@ -8,6 +8,7 @@ services:
       # - /media/rsukumar/disk4s1/Movies:/movies
       - /media/rsukumar/Ext_Disk_5/Videos:/media/Disk5
     restart: unless-stopped
+    stop_grace_period: 30s
 
 volumes:
   jellyfin-config:

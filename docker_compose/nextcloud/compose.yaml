@@ -2,6 +2,7 @@ services:
   db:
     image: mariadb:latest
     restart: always
+    stop_grace_period: 1m
     command: --transaction-isolation=READ-COMMITTED
     volumes:
       - db:/var/lib/mysql
