@@ -13,6 +13,9 @@ homarr/appdata/
 !**/nginx-proxy-manager/data/letsencrypt/*.pem
 pi-hole/e*
 
+# tailscale node state: contains the node's private WireGuard keys
+tailscale/tailscale-state/
+
 # systemd unit copies live beside the scripts they wrap
 bookorbit/scripts/*.service
 bookorbit/scripts/*.timer

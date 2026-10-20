@@ -1,0 +1,42 @@
+# Subnet router for the tailnet.
+#
+# Runs on the Pi (192.168.4.125) in host network mode so it can forward
+# between the WireGuard tunnel and the LAN. BookOrbit stays reachable at
+# https://bookorbit.myhome.me over cellular; the Caddy root CA must be
+# trusted on the client device (see README).
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    hostname: tailscale-gw
+
+    # Host networking is required: a subnet router moves packets between
+    # the tunnel and the LAN, which an isolated bridge network cannot do.
+    network_mode: host
+
+    # TS_AUTHKEY comes from .env. Do NOT also list it under `environment:`
+    # Compose gives `environment:` precedence and would override .env.
+    env_file:
+      - .env
+    environment:
+      - TS_USERSPACE=false
+      # Subnet routes must be approved in the Tailscale admin console;
+      # Tailscale never self-approves them.
+      - TS_EXTRA_ARGS=--advertise-routes=192.168.4.0/22
+
+    volumes:
+      # Tailscale's default state path, persisted so the node keeps its
+      # identity across restarts. Contains the node's private WireGuard
+      # keys -- must stay out of git.
+      - ./tailscale-state:/var/lib/tailscale
+
+    devices:
+      # Without a TUN device the node authenticates but passes no traffic.
+      - /dev/net/tun:/dev/net/tun
+
+    cap_add:
+      - net_admin
+      - net_raw
+      - sys_module
+
+    restart: unless-stopped
